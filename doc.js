@@ -1,14 +1,15 @@
-function MatMult(Mat1, Mat2) {
+export function MatMult(Mat1, Mat2) {
     result = new Array();
-    for (let i = 0; i < Mat1.length; i++) {
-        
+    //Mat1's row length must be equal to Mat2's column length
+    if (Mat1.length != Mat2[0].length) {
+        return 0;
     }
 }
 
-function TanH(x) {
+export function TanH(x) {
     return Math.tanh(x);
 }
 
-function TanHder(x) {
+export function TanHder(x) {
     return 1 - TanH(x)**2;
 }
