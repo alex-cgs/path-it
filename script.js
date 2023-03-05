@@ -1,9 +1,11 @@
 import * as doc from './doc.js';
 
+import * as play from './ship.js'
 
 var c = document.getElementById("Canv");
 
 let ctx = c.getContext("2d");
+
 ctx.beginPath();
 
 let map = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
@@ -17,12 +19,21 @@ let map = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 
-map[0][0] = 1;
+
+let spawnX = 0;
+let spawnY = 0;
+
+
+map[spawnX][spawnY] = 1;
 
 map[4][4] = 2;
 map[5][4] = 2;
 map[4][5] = 2;
 map[5][5] = 2;
+
+map[9][9] = 3;
+
+
 
 
 
@@ -41,26 +52,44 @@ function draw(map, idx, fill, stroke) {
         }
     }
 }
-function draw2(map, idx, fill, stroke) {
-    let ctx2 = c.getContext("2d");
-    ctx2.fillStyle = fill;
-    ctx2.strokeStyle = stroke;
-    for (let i = 0; i < map.length; i++){
-        for (let j = 0; j < map[i].length; j++){
-            if (map[i][j] == idx) {
-                ctx2.rect(48 * j, 48 * i, 48, 48);
-                ctx2.fill();
-                ctx2.stroke();
-            }
-        }
-    }
-}
 
 console.log(map);
 
 
-draw(map, 1, "green", "darkgreen");
+draw(map, 2, "#FC3448", "#8B0000"); //Draw obstacles
 
-draw(map, 2, "#FC3448", "#8B0000");
+draw(map, 1, "green", "darkgreen"); //Draw spawn point
+
+draw(map, 3, "lightgrey", "grey"); //Draw end line
+
+
+
+
+
+//To myself: to spawn ship, coordinates:
+// rownb * iter + 3 for its x position
+// colnb * iter + 12 for its y position
+// (because canvas can't draw right, or i can't)
+
+//0° std (3, 12)
+
+//BEWARE IF ROTATE: 90° clockwise (1.5708rad, down): do x = x, y = -y
+//(std: 3, -12)
+
+//270° clockwise (4.71239rad, down): x = -(24 - 3) or -iter -21 and becomes vertical,
+// y = y or 12 and becomes horizontal 
+//(std -21, 12)
+
+//180° (pi, or 3.14159rad,) 
+//(std -21, -12)
+
+
+let x = new play.Ship(3, 12, 0, [0], [0]);
+
+//let y = new play.Ship(0, 0, 0, [0], [0]);
+
+x.spawn(ctx);
+
+//y.spawn(ctx);
 
 //console.log(doc.softmax([[1, 2, 3], [4, 5, 6], [7, 8, 9]]));
