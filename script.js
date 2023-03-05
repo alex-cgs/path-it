@@ -84,11 +84,29 @@ draw(map, 3, "lightgrey", "grey"); //Draw end line
 //(std -21, -12)
 
 
-let x = new play.Ship(3, 12, 0, [0], [0]);
+let player1 = new play.Ship(3, 12, 0, [0], [0]);
+
+
+player1.spawn();
+
+
+console.log(player1.x);
 
 //let y = new play.Ship(0, 0, 0, [0], [0]);
 
-x.spawn(ctx);
+
+
+function liveGame() {
+    
+}
+
+let vx = 0;
+let vy = 0;
+
+
+setInterval(liveGame(), 1000 / 60);
+
+
 
 //y.spawn(ctx);
 
