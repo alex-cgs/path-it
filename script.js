@@ -6,8 +6,6 @@ var c = document.getElementById("Canv");
 
 let ctx = c.getContext("2d");
 
-ctx.beginPath();
-
 let map = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
@@ -38,7 +36,6 @@ map[9][9] = 3;
 
 
 function draw(map, idx, fill, stroke) {
-    ctx.closePath();
     ctx.beginPath();
     ctx.fillStyle = fill;
     ctx.strokeStyle = stroke;
@@ -51,6 +48,7 @@ function draw(map, idx, fill, stroke) {
             }
         }
     }
+    ctx.closePath();
 }
 
 console.log(map);
@@ -84,10 +82,10 @@ draw(map, 3, "lightgrey", "grey"); //Draw end line
 //(std -21, -12)
 
 
-let player1 = new play.Ship(3, 12, 0, [0], [0]);
+let player1 = new play.Ship(3, 12, 0, [0], [0], ctx);
 
 
-player1.spawn();
+//player1.spawn(ctx);
 
 
 console.log(player1.x);
@@ -96,15 +94,18 @@ console.log(player1.x);
 
 
 
-function liveGame() {
-    
+function update() {
+    player1.x += 5;
+    player1.draw(ctx);
+    requestAnimationFrame(update);
 }
 
 let vx = 0;
 let vy = 0;
 
 
-setInterval(liveGame(), 1000 / 60);
+
+setInterval(update(), 1000 / 60);
 
 
 
