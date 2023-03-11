@@ -82,7 +82,11 @@ draw(map, 3, "lightgrey", "grey"); //Draw end line
 //(std -21, -12)
 
 
-let player1 = new play.Ship(3, 12, 0, [0], [0], ctx);
+let player1 = new play.Ship(12, 12, 0, [0], [0]);
+
+let player2 = new play.Ship(36, 36, 0, [0], [0]);
+
+var ships = [player1, player2];
 
 
 //player1.spawn(ctx);
@@ -93,19 +97,42 @@ console.log(player1.x);
 //let y = new play.Ship(0, 0, 0, [0], [0]);
 
 
+document.addEventListener('keydown', function(e) {
+    for (let i = 0; i < ships.length; i++) {
+        switch (e.keyCode) {
+            case 37:
+                ships[i].left();
+                break;
+            case 38:
+                ships[i].move();
+                break;
+            case 39:
+                ships[i].right();
+                break;
+        }
+    }
+});
+
 
 function update() {
-    player1.x += 5;
-    player1.draw(ctx);
-    requestAnimationFrame(update);
+    ctx.clearRect(0, 0, c.width, c.height);
+    draw(map, 2, "#FC3448", "#8B0000"); //Draw obstacles
+    draw(map, 1, "green", "darkgreen"); //Draw spawn point
+    draw(map, 3, "lightgrey", "grey"); //Draw end line
+    for (let i = 0; i < 2; i++) {
+        if (!ships[i].dead) {
+            ships[i].right(); 
+            ships[i].x += ships[i].speed * Math.cos(ships[i].angle);
+            ships[i].y += ships[i].speed * Math.sin(ships[i].angle);
+            ships[i].draw(ctx);
+        }
+    }
+    console.log(player1.angle);
 }
 
-let vx = 0;
-let vy = 0;
+setInterval(update, 15);
 
 
-
-setInterval(update(), 1000 / 60);
 
 
 

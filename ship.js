@@ -2,26 +2,11 @@ export class Ship {
     constructor(x, y, angle, weights, biases, ctx) {
         this.x = x;
         this.y = y;
-        this.speed = 5;
+        this.speed = 0;
         this.angle = angle;
         this.weights = weights;
         this.bias = biases;
-
-        //ctx.closePath();
-        ctx.rotate(this.angle);
-        ctx.translate(this.x + 15, this.y);  
-        ctx.beginPath();
-        ctx.lineTo(this.x - 5, this.y - 10);
-        ctx.lineTo(this.x, this.y);
-        ctx.lineTo(this.x - 5, this.y + 10);
-        ctx.lineTo(this.x + 15, this.y);
-        ctx.strokeStyle = "orange";
-        ctx.fillStyle = "orange";
-        ctx.stroke();
-        ctx.fill();
-        
-        document.addEventListener("keydown", this.keydown);
-        document.addEventListener("keyup", this.keyup);
+        this.dead = false;
     }
 
     
@@ -44,41 +29,44 @@ export class Ship {
 
     draw(ctx) {
         ctx.save();
-        ctx.rotate(this.angle);
-        ctx.translate(this.x + 15, this.y);  
+        ctx.translate(this.x, this.y);  
         ctx.beginPath();
-        ctx.lineTo(this.x - 5, this.y - 10);
-        ctx.lineTo(this.x, this.y);
-        ctx.lineTo(this.x - 5, this.y + 10);
-        ctx.lineTo(this.x + 15, this.y);
-        ctx.closePath();
+        ctx.arc(this.x, this.y, 8, 0, Math.PI * 2);
+        
         ctx.strokeStyle = "orange";
         ctx.fillStyle = "orange";
+        
+        
+
+
         ctx.stroke();
         ctx.fill();
+        ctx.closePath();
         ctx.restore();
+
+
+        //SENSOR:
+        ctx.save();
+
+        ctx.moveTo(this.x * 2, this.y * 2);
+
+        ctx.lineTo(this.x*2 + 75*Math.cos(this.angle), this.y*2 + 75*Math.sin(this.angle) );
+
+        ctx.restore();
+
+        ctx.stroke();
     }
 
     move() {
-        if (this.rightPressed) {
-            this.x += 5;
-            requestAnimationFrame(this.move);
-        }
+        this.speed = 4;
     }
 
-    keydown = (e) => {
-        if (e.code === "ArrowRight") {
-            this.rightPressed = true;
-            console.log("pressed");
-            console.log(this.x);
-            this.x += this.speed;    
-        }
+    left() {
+        this.angle -= Math.PI / 15;
     }
 
-    keyup = (e) => {
-        if (e.code == "ArrowRight") {
-            this.rightPressed = false;
-        }
+    right() {
+        this.angle += Math.PI / 15;
     }
 
 }
