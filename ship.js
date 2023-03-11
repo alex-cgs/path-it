@@ -62,11 +62,11 @@ export class Ship {
     }
 
     left() {
-        this.angle -= Math.PI / 15;
+        this.angle -= Math.PI / 25;
     }
 
     right() {
-        this.angle += Math.PI / 15;
+        this.angle += Math.PI / 25;
     }
 
 }

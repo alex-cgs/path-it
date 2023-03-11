@@ -121,7 +121,7 @@ function update() {
     draw(map, 3, "lightgrey", "grey"); //Draw end line
     for (let i = 0; i < 2; i++) {
         if (!ships[i].dead) {
-            ships[i].right(); 
+            //ships[i].right(); Tests for speed when turning
             ships[i].x += ships[i].speed * Math.cos(ships[i].angle);
             ships[i].y += ships[i].speed * Math.sin(ships[i].angle);
             ships[i].draw(ctx);
