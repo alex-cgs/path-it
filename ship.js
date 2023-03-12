@@ -1,5 +1,7 @@
+import * as sen from './sensor.js';
+
 export class Ship {
-    constructor(x, y, angle, weights, biases, ctx) {
+    constructor(x, y, angle, weights, biases) {
         this.x = x;
         this.y = y;
         this.speed = 0;
@@ -7,10 +9,18 @@ export class Ship {
         this.weights = weights;
         this.bias = biases;
         this.dead = false;
+        this.fit = 0;
+        this.sensor1 = new sen.Sensor(this.x, this.x, this.angle);
+        this.sensor2 = new sen.Sensor(this.x, this.x, this.angle + Math.PI / 6);
+        this.sensor3 = new sen.Sensor(this.x, this.x, this.angle - Math.PI / 6);
+        this.sensor4 = new sen.Sensor(this.x, this.x, this.angle + Math.PI / 3);
+        this.sensor5 = new sen.Sensor(this.x, this.x, this.angle - Math.PI / 3);
+        this.capTouch = [0, 0, 0, 0, 0];
     }
 
     
 
+    //OLD DESIGN, to do in the end just for aesthetics
     // spawn(ctx) {
     //     //this.move();
     //     ctx.closePath();
@@ -44,29 +54,28 @@ export class Ship {
         ctx.closePath();
         ctx.restore();
 
+        //SENSOR:
+        this.sensor1.draw(ctx, this.x, this.y, this.angle);
+        this.sensor2.draw(ctx, this.x, this.y, this.angle + Math.PI / 6);
+        this.sensor3.draw(ctx, this.x, this.y, this.angle - Math.PI / 6);
+        this.sensor4.draw(ctx, this.x, this.y, this.angle + Math.PI / 3);
+        this.sensor5.draw(ctx, this.x, this.y, this.angle - Math.PI / 3);
+
 
         //SENSOR:
-        ctx.save();
-
-        ctx.moveTo(this.x * 2, this.y * 2);
-
-        ctx.lineTo(this.x*2 + 75*Math.cos(this.angle), this.y*2 + 75*Math.sin(this.angle) );
-
-        ctx.restore();
-
-        ctx.stroke();
+        
     }
 
     move() {
-        this.speed = 4;
+        this.speed = 1;
     }
 
     left() {
-        this.angle -= Math.PI / 25;
+        this.angle -= Math.PI / 20;
     }
 
     right() {
-        this.angle += Math.PI / 25;
+        this.angle += Math.PI / 20;
     }
 
 }

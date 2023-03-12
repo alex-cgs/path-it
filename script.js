@@ -1,6 +1,6 @@
 import * as doc from './doc.js';
 
-import * as play from './ship.js'
+import * as play from './ship.js';
 
 var c = document.getElementById("Canv");
 
@@ -32,7 +32,8 @@ map[5][5] = 2;
 map[9][9] = 3;
 
 
-
+var xObs = [];
+var yObs = [];
 
 
 function draw(map, idx, fill, stroke) {
@@ -51,10 +52,29 @@ function draw(map, idx, fill, stroke) {
     ctx.closePath();
 }
 
-console.log(map);
+function initdraw(map, idx, fill, stroke) {
+    ctx.beginPath();
+    ctx.fillStyle = fill;
+    ctx.strokeStyle = stroke;
+    for (let i = 0; i < map.length; i++){
+        for (let j = 0; j < map[i].length; j++){
+            if (map[i][j] == idx) {
+                ctx.rect(48 * j, 48 * i, 48, 48);
+                ctx.fill();
+                ctx.stroke();
+
+                xObs[xObs.length] = 48 * j;
+                yObs[yObs.length] = 48 * i;
+            }
+        }
+    }
+    ctx.closePath();
+}
+
+console.log(xObs, yObs);
 
 
-draw(map, 2, "#FC3448", "#8B0000"); //Draw obstacles
+initdraw(map, 2, "#FC3448", "#8B0000"); //Draw obstacles
 
 draw(map, 1, "green", "darkgreen"); //Draw spawn point
 
@@ -82,9 +102,9 @@ draw(map, 3, "lightgrey", "grey"); //Draw end line
 //(std -21, -12)
 
 
-let player1 = new play.Ship(12, 12, 0, [0], [0]);
+let player1 = new play.Ship(120, 120, 0, [0], [0]);
 
-let player2 = new play.Ship(36, 36, 0, [0], [0]);
+let player2 = new play.Ship(36, 36, Math.PI/4, [0], [0]);
 
 var ships = [player1, player2];
 
@@ -97,6 +117,48 @@ console.log(player1.x);
 //let y = new play.Ship(0, 0, 0, [0], [0]);
 
 
+var genFit = 0.004;
+
+function update() {
+
+    ctx.clearRect(0, 0, c.width, c.height);
+    draw(map, 2, "#FC3448", "#8B0000"); //Draw obstacles
+    draw(map, 1, "green", "darkgreen"); //Draw spawn point
+    draw(map, 3, "lightgrey", "grey"); //Draw end line
+
+
+    for (let i = 0; i < 2; i++) {
+
+        if (!ships[i].dead) {
+            //ships[i].right(); Tests for speed when turning
+            ships[i].x += ships[i].speed * Math.cos(ships[i].angle);
+            ships[i].y += ships[i].speed * Math.sin(ships[i].angle);
+
+            //Check if ship is dead
+            for (let d = 0; d < xObs.length; d++) {
+
+                //10 = ship's width, 58 = ship's width + object width (48)
+                if ((ships[i].x * 2 > xObs[d] - 10 && ships[i].x * 2 < xObs[d] + 58 &&
+                    ships[i].y * 2 > yObs[d] - 10 && ships[i].y * 2 < yObs[d] + 58) ||
+                    (ships[i].x * 2 > 470 || ships[i].y * 2 > 470 || ships[i].x * 2 < 10 || ships[i].y * 2 < 10)) {
+                    
+                    ships[i].dead = true;
+
+                    console.log(ships[i].fit);
+                    break;
+                }
+            }
+        }
+        ships[i].draw(ctx);
+    }
+    genFit += 0.003;
+    console.log(1/genFit);
+}
+
+update();
+
+
+
 document.addEventListener('keydown', function(e) {
     for (let i = 0; i < ships.length; i++) {
         switch (e.keyCode) {
@@ -105,6 +167,7 @@ document.addEventListener('keydown', function(e) {
                 break;
             case 38:
                 ships[i].move();
+                setInterval(update, 20);
                 break;
             case 39:
                 ships[i].right();
@@ -112,25 +175,6 @@ document.addEventListener('keydown', function(e) {
         }
     }
 });
-
-
-function update() {
-    ctx.clearRect(0, 0, c.width, c.height);
-    draw(map, 2, "#FC3448", "#8B0000"); //Draw obstacles
-    draw(map, 1, "green", "darkgreen"); //Draw spawn point
-    draw(map, 3, "lightgrey", "grey"); //Draw end line
-    for (let i = 0; i < 2; i++) {
-        if (!ships[i].dead) {
-            //ships[i].right(); Tests for speed when turning
-            ships[i].x += ships[i].speed * Math.cos(ships[i].angle);
-            ships[i].y += ships[i].speed * Math.sin(ships[i].angle);
-            ships[i].draw(ctx);
-        }
-    }
-    console.log(player1.angle);
-}
-
-setInterval(update, 15);
 
 
 
