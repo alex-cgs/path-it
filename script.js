@@ -18,11 +18,14 @@ let map = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 
 
-let spawnX = 0;
-let spawnY = 0;
+let xSpawn = 0;
+let ySpawn = 0;
+
+var xEnd = 1000;
+var yEnd = 1000;
 
 
-map[spawnX][spawnY] = 1;
+map[xSpawn][ySpawn] = 1;
 
 map[4][4] = 2;
 map[5][4] = 2;
@@ -52,7 +55,7 @@ function draw(map, idx, fill, stroke) {
     ctx.closePath();
 }
 
-function initdraw(map, idx, fill, stroke) {
+function initdrawObs(map, idx, fill, stroke) {
     ctx.beginPath();
     ctx.fillStyle = fill;
     ctx.strokeStyle = stroke;
@@ -71,15 +74,35 @@ function initdraw(map, idx, fill, stroke) {
     ctx.closePath();
 }
 
-console.log(xObs, yObs);
+function initdrawEnd(map, idx, fill, stroke) {
+    ctx.beginPath();
+    ctx.fillStyle = fill;
+    ctx.strokeStyle = stroke;
+    for (let i = 0; i < map.length; i++){
+        for (let j = 0; j < map[i].length; j++){
+            if (map[i][j] == idx) {
+                ctx.rect(48 * j, 48 * i, 48, 48);
+                ctx.fill();
+                ctx.stroke();
+
+                xEnd = 48 * j;
+                yEnd = 48 * i;
+            }
+        }
+    }
+    ctx.closePath();
+}
 
 
-initdraw(map, 2, "#FC3448", "#8B0000"); //Draw obstacles
+
+
+initdrawObs(map, 2, "#FC3448", "#8B0000"); //Draw obstacles
 
 draw(map, 1, "green", "darkgreen"); //Draw spawn point
 
-draw(map, 3, "lightgrey", "grey"); //Draw end line
+initdrawEnd(map, 3, "lightgrey", "grey"); //Draw end line
 
+console.log(xObs, yObs, xEnd, yEnd);
 
 
 
@@ -102,7 +125,7 @@ draw(map, 3, "lightgrey", "grey"); //Draw end line
 //(std -21, -12)
 
 
-let player1 = new play.Ship(120, 120, 0, [0], [0]);
+let player1 = new play.Ship(60, 60, 0, [0], [0]);
 
 let player2 = new play.Ship(36, 36, Math.PI/4, [0], [0]);
 
@@ -147,12 +170,23 @@ function update() {
                     console.log(ships[i].fit);
                     break;
                 }
+
+                if ((ships[i].x * 2 > xEnd - 10 && ships[i].x * 2 < xEnd + 58 &&
+                    ships[i].y * 2 > yEnd - 10 && ships[i].y * 2 < yEnd + 58)) {
+                    
+                    ships[i].dead = true;
+
+                    ships[i].fit = 1/genFit;
+
+                    console.log(ships[i].fit);
+                    break;
+                }
             }
         }
         ships[i].draw(ctx);
     }
     genFit += 0.003;
-    console.log(1/genFit);
+    //console.log(1/genFit);
 }
 
 update();
