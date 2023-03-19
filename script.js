@@ -125,9 +125,9 @@ console.log(xObs, yObs, xEnd, yEnd);
 //(std -21, -12)
 
 
-let player1 = new play.Ship(60, 60, 0, [0], [0]);
+let player1 = new play.Ship(60, 60, 0, [0], [0], xObs, yObs);
 
-let player2 = new play.Ship(36, 36, Math.PI/4, [0], [0]);
+let player2 = new play.Ship(36, 36, Math.PI/4, [0], [0], xObs, yObs);
 
 var ships = [player1, player2];
 
@@ -185,7 +185,8 @@ function update() {
         }
         ships[i].draw(ctx);
     }
-    genFit += 0.003;
+    console.log(player1.capTouch);
+    genFit += 0.002;
     //console.log(1/genFit);
 }
 

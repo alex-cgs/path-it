@@ -1,7 +1,7 @@
 import * as sen from './sensor.js';
 
 export class Ship {
-    constructor(x, y, angle, weights, biases) {
+    constructor(x, y, angle, weights, biases, xObs, yObs) {
         this.x = x;
         this.y = y;
         this.speed = 0;
@@ -10,12 +10,12 @@ export class Ship {
         this.bias = biases;
         this.dead = false;
         this.fit = 0;
-        this.sensor1 = new sen.Sensor(this.x, this.x, this.angle);
-        this.sensor2 = new sen.Sensor(this.x, this.x, this.angle + Math.PI / 6);
-        this.sensor3 = new sen.Sensor(this.x, this.x, this.angle - Math.PI / 6);
-        this.sensor4 = new sen.Sensor(this.x, this.x, this.angle + Math.PI / 3);
-        this.sensor5 = new sen.Sensor(this.x, this.x, this.angle - Math.PI / 3);
-        this.capTouch = [0, 0, 0, 0, 0];
+        this.sensor1 = new sen.Sensor(this.x, this.x, this.angle, xObs, yObs);
+        this.sensor2 = new sen.Sensor(this.x, this.x, this.angle + Math.PI / 6, xObs, yObs);
+        this.sensor3 = new sen.Sensor(this.x, this.x, this.angle - Math.PI / 6, xObs, yObs);
+        this.sensor4 = new sen.Sensor(this.x, this.x, this.angle + Math.PI / 3, xObs, yObs);
+        this.sensor5 = new sen.Sensor(this.x, this.x, this.angle - Math.PI / 3, xObs, yObs);
+        this.capTouch = [this.sensor1.hit, this.sensor2.hit, this.sensor3.hit, this.sensor4.hit, this.sensor5.hit];
     }
 
     
@@ -62,8 +62,8 @@ export class Ship {
         this.sensor5.draw(ctx, this.x, this.y, this.angle - Math.PI / 3);
 
 
-        //SENSOR:
-        
+        this.capTouch = [this.sensor1.collision(), this.sensor2.collision(), this.sensor3.collision(), this.sensor4.collision(), this.sensor5.collision()];
+        //this.capTouch = [this.sensor1.hit, this.sensor2.hit, this.sensor3.hit, this.sensor4.hit, this.sensor5.hit];
     }
 
     move() {
