@@ -62,7 +62,7 @@ export class Ship {
         this.sensor5.draw(ctx, this.x, this.y, this.angle - Math.PI / 3);
 
 
-        this.capTouch = [this.sensor1.collision(), this.sensor2.collision(), this.sensor3.collision(), this.sensor4.collision(), this.sensor5.collision()];
+        this.capTouch = [this.sensor5.collision(), this.sensor3.collision(), this.sensor1.collision(), this.sensor2.collision(), this.sensor4.collision()];
         //this.capTouch = [this.sensor1.hit, this.sensor2.hit, this.sensor3.hit, this.sensor4.hit, this.sensor5.hit];
     }
 
