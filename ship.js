@@ -1,13 +1,15 @@
 import * as sen from './sensor.js';
+import * as nn from './net.js';
+import * as doc from "./doc.js";
 
 export class Ship {
-    constructor(x, y, angle, weights, biases, xObs, yObs) {
+    constructor(x, y, angle, weights, biases, xObs, yObs, id) {
         this.x = x;
         this.y = y;
         this.speed = 0;
         this.angle = angle;
         this.weights = weights;
-        this.bias = biases;
+        this.biases = biases;
         this.dead = false;
         this.fit = 0;
         this.sensor1 = new sen.Sensor(this.x, this.x, this.angle, xObs, yObs);
@@ -16,6 +18,8 @@ export class Ship {
         this.sensor4 = new sen.Sensor(this.x, this.x, this.angle + Math.PI / 3, xObs, yObs);
         this.sensor5 = new sen.Sensor(this.x, this.x, this.angle - Math.PI / 3, xObs, yObs);
         this.capTouch = [this.sensor1.hit, this.sensor2.hit, this.sensor3.hit, this.sensor4.hit, this.sensor5.hit];
+        this.id = id;
+        this.best = false;
     }
 
     
@@ -45,9 +49,6 @@ export class Ship {
         
         ctx.strokeStyle = "orange";
         ctx.fillStyle = "orange";
-        
-        
-
 
         ctx.stroke();
         ctx.fill();
@@ -78,6 +79,70 @@ export class Ship {
         this.angle += Math.PI / 20;
     }
 
+
+    initiate() {
+        this.weights = [
+            //Weights 9x6 between 1st and 2nd layer
+            [
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()]
+            ],
+
+            //Weights 6x3 between 2nd and 3rd layer
+            [
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+                [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()]
+            ]
+        ];
+
+        this.biases = [
+            //Set 1x6 of biases
+            [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()],
+
+            //Set 1x3 of biases
+            [(-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random(), (-1)**doc.getRandomInt(2) * Math.random()]
+        ]
+    }
+
+    propagate(xEnd, yEnd) {
+        let W1 = this.weights[0];
+        let W2 = this.weights[1];
+        let B1 = this.biases[0];
+        let B2 = this.biases[1];
+
+        let input = [[].concat(this.x / 240, this.y / 240, this.capTouch, xEnd / 480, yEnd / 480)];
+
+        //console.log(input);
+
+        //input = [[1, 1, 1, 1, 1, 1, 1, 1, 1]]
+        let weigthedA = doc.matMult(input, W1);
+        
+        let finalA = doc.matAdd(weigthedA, B1);
+        //console.log(finalA);
+        let newInput = [doc.tanh(finalA)];
+        //console.log(newInput);
+        let weigthedB = doc.matMult(newInput, W2);
+        //console.log(weigthedB);
+        let finalB = doc.matAdd(weigthedB, B2);
+        //console.log(finalB);
+        let final = doc.tanh(finalB);
+
+        let decision = doc.argmax(final);
+
+        console.log(decision, this.id);
+        return decision;
+    }
 }
 
 

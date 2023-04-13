@@ -42,6 +42,7 @@ export class Sensor {
             }
             else {
                 this.hit = 0;
+                return 0;
             } 
         }
         return 0;
