@@ -12,24 +12,13 @@ var c = document.getElementById("Canv");
 
 let ctx = c.getContext("2d");
 
-let genArray = undefined;
+let genArray;
 let map;
 var xObs = [];
 var yObs = [];
 let xEnd;
 let yEnd;
-
-let player1 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p1");
-let player2 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p2");
-let player3 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p3");
-let player4 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p4");
-let player5 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p5");
-let player6 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p6");
-let player7 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p7");
-let player8 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p8");
-let player9 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p9");
-let player10 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p10");
-var ships = [player1, player2, player3, player4, player5, player6, player7, player8, player9, player10];
+let ships;
 
 var genFit = 0.004;
 
@@ -87,6 +76,7 @@ function initdrawEnd(map, idx, fill, stroke) {
     ctx.closePath();
 }
 
+
 function setup() {
 
     initdrawObs(map, 2, "#FC3448", "#8B0000"); //Draw obstacles
@@ -96,12 +86,27 @@ function setup() {
     initdrawEnd(map, 3, "lightgrey", "grey"); //Draw end line
 }
 
-function initNN() {
+function initNN(ships) {
     for (let i = 0; i < ships.length; i++) {
         ships[i].initiate();
         //console.log(ships[i].weights, ships[i].biases);
     }
 }
+
+
+let player1 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p1");
+let player2 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p2");
+let player3 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p3");
+let player4 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p4");
+let player5 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p5");
+/**
+let player6 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p6");
+let player7 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p7");
+let player8 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p8");
+let player9 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p9");
+let player10 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p10"); */
+ships = [player1];
+
 
 function update() {
 
@@ -117,7 +122,7 @@ function update() {
             //ships[i].right(); Tests for speed when turning
             ships[i].x += ships[i].speed * Math.cos(ships[i].angle);
             ships[i].y += ships[i].speed * Math.sin(ships[i].angle);
-
+            ships[i].fit = genFit;
             //console.log(ships[i].weights)
             let decision = ships[i].propagate(xEnd, yEnd);
 
@@ -139,9 +144,7 @@ function update() {
 
                     ships[i].dead = true;
 
-                    ships[i].fit = genFit;
-
-                    //console.log(ships[i].fit);
+                    console.log(ships[i].fit);
                     break;
                 }
 
@@ -150,11 +153,10 @@ function update() {
 
                     ships[i].dead = true;
 
-                    ships[i].fit = genFit * 1000000;
+                    ships[i].fit = (1 / genFit) * 10000000000;
 
-                    //console.log(ships[i].fit);
+                    console.log(ships[i].fit);
                     break;
-                console.log([i, ships[i].fit]);
                 }
             }
         }
@@ -167,6 +169,10 @@ function update() {
 
 //select function, selects the individual with highest fit score or lowest distance to endpoint
 function select(ships, xEnd, yEnd) {
+    for (let i = 0; i < ships.length; i++) {
+        ships[i].dead = true;
+    }
+    genFit = 0;
     var bestFit = -1;
     var bestFitIdx = -1;
     var lowDist = +Infinity;
@@ -183,7 +189,8 @@ function select(ships, xEnd, yEnd) {
     }
     if (bestFit > 0) {
         console.log(ships[bestFitIdx].id + " has been selected");
-        ships[bestFitIdx].best = true
+        ships[bestFitIdx].best = true;
+        ships[bestFitIdx].id = "currentBest"
         return bestFitIdx;
     }
     console.log(ships[lowDistIdx].weights[0][0], ships[lowDistIdx].weights[0][1], ships[lowDistIdx].weights[0][2], ships[lowDistIdx].weights[0][3], ships[lowDistIdx].weights[0][4], ships[lowDistIdx].weights[0][8], "ufhsuif");
@@ -203,6 +210,7 @@ function crossfit(best, ships, xSpawn, ySpawn, angle, xObs, yObs, id) {
             newShips = [].concat(newShips, newShip);
         }
     }
+    best = new play.Ship(xSpawn, ySpawn, angle, best.weights, best.biases, xObs, yObs, "currentBest");
     newShips = [].concat(best, newShips);
     return newShips;
 }
@@ -240,46 +248,81 @@ function nextGen() {
 fetch('./maps/mapsDB.json')
 	.then(response => response.json())
 	.then(data => {
+        console.log(xObs, yObs);
 
         // Do something with the JSON data
 		genArray = data['Maps'];
-		let obj = genArray[1]['arr'];
+
+        let mapIdx = 3;
+
+		let obj = genArray[mapIdx]['arr'];
 		map = Object.values(obj);
 
+
 		setup();
-		initNN();
+
+        console.log(genFit, "genFit")
+
+        
+        let p1 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p1");
+        let p2 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p2");
+        let p3 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p3");
+        let p4 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p4");
+        let p5 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
+        /**
+        let player6 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p6");
+        let player7 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p7");
+        let player8 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p8");
+        let player9 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p9");
+        let player10 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p10"); */
+        ships = [p1, p2, p3, p4, p5];
+
+        console.log(ships, "init");
+
+
+		initNN(ships);
         //console.log(player1);
 		update(); //Needs 1 update to spawn ships and obstacles to the map. 
         //let best = select(ships);
         //let newShips = crossfit(best, ships, 0, 0, 0, [], []);
         //mutation(newShips);
         //console.log(newShips);
-        console.log(ships);
-        console.log([...ships[4].weights], "print0")    
         
         document.addEventListener('keydown', function(e) {
             switch (e.keyCode) {
                 case 13:
-                    console.log([...ships[4].weights], "print1")
+                    for (let i = 0; i < ships.length; i ++) {
+                        genFit = 0;
+                        if (!ships[i].dead) {
+                            ships[i].fit = 0
+                        }
+                    }
                     var bestIdx = select(ships, xEnd, yEnd);
-                    console.log(ships[bestIdx], "heererere");
                     ships = crossfit(ships[bestIdx], ships, 12, 12, Math.PI / 4, xObs, yObs);
-                    console.log(ships);
+                    console.log(ships, "next");
 
-                    // FIX MUTATION DKl lkjvsnelkngsdlgndlsrgldnbgkjvlc
-                    mutation(ships);
+                    // FIX MUTATION 
+                    mutation(ships.slice(1));
             }
             for (let i = 0; i < ships.length; i++) {
                 switch (e.keyCode) {
                     case 37:
-                        ships[i].left();
+                        mapIdx -= 1;
+                        obj = genArray[mapIdx]['arr'];
+		                map = Object.values(obj);
                         break;
                     case 38:
                         ships[i].move();
-                        setInterval(update, 100);
+                        ships[i].dead = false;
+                        const myInterval = setInterval(update, 50);
                         break;
                     case 39:
-                        ships[i].right();
+                        mapIdx += 1;
+                        break;
+                    case 40:
+                        ships[i].dead = true;
+                        update();
+                        clearInterval(myInterval);
                         break;
                     case 13:
                         ships[i].move()

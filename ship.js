@@ -12,11 +12,13 @@ export class Ship {
         this.biases = biases;
         this.dead = false;
         this.fit = 0;
-        this.sensor1 = new sen.Sensor(this.x, this.x, this.angle, xObs, yObs);
-        this.sensor2 = new sen.Sensor(this.x, this.x, this.angle + Math.PI / 6, xObs, yObs);
-        this.sensor3 = new sen.Sensor(this.x, this.x, this.angle - Math.PI / 6, xObs, yObs);
-        this.sensor4 = new sen.Sensor(this.x, this.x, this.angle + Math.PI / 3, xObs, yObs);
-        this.sensor5 = new sen.Sensor(this.x, this.x, this.angle - Math.PI / 3, xObs, yObs);
+        this.xObs = xObs;
+        this.yObs = yObs
+        this.sensor1 = new sen.Sensor(this.x, this.x, this.angle, this.xObs, this.yObs, 40);
+        this.sensor2 = new sen.Sensor(this.x, this.x, this.angle + Math.PI / 6, this.xObs, this.yObs, 40);
+        this.sensor3 = new sen.Sensor(this.x, this.x, this.angle - Math.PI / 6, this.xObs, this.yObs, 40);
+        this.sensor4 = new sen.Sensor(this.x, this.x, this.angle + Math.PI / 3, this.xObs, this.yObs, 40);
+        this.sensor5 = new sen.Sensor(this.x, this.x, this.angle - Math.PI / 3, this.xObs, this.yObs, 40);
         this.capTouch = [this.sensor1.hit, this.sensor2.hit, this.sensor3.hit, this.sensor4.hit, this.sensor5.hit];
         this.id = id;
         this.best = false;
@@ -47,8 +49,34 @@ export class Ship {
         ctx.beginPath();
         ctx.arc(this.x, this.y, 8, 0, Math.PI * 2);
         
-        ctx.strokeStyle = "orange";
-        ctx.fillStyle = "orange";
+        if (this.id == "p1" || this.id == "p11") {
+            ctx.strokeStyle = "orange";
+            ctx.fillStyle = "orange";
+        }
+        else if (this.id == "p2" || this.id == "p12") {
+            ctx.strokeStyle = "red";
+            ctx.fillStyle = "red";
+        }
+        else if (this.id == "p3" || this.id == "p13") {
+            ctx.strokeStyle = "blue";
+            ctx.fillStyle = "blue";
+        }
+        else if (this.id == "p4" || this.id == "p14") {
+            ctx.strokeStyle = "yellow";
+            ctx.fillStyle = "yellow";
+        }
+        else if (this.id == "p5" || this.id == "p15") {
+            ctx.strokeStyle = "black";
+            ctx.fillStyle = "black";
+        }
+        else if (this.id == "currentBest") {
+            ctx.strokeStyle = "purple";
+            ctx.fillStyle = "purple";
+        }
+        else {
+            ctx.strokeStyle = "orange";
+            ctx.fillStyle = "orange";
+        }
 
         ctx.stroke();
         ctx.fill();
@@ -116,6 +144,7 @@ export class Ship {
     }
 
     propagate(xEnd, yEnd) {
+
         let W1 = this.weights[0];
         let W2 = this.weights[1];
         let B1 = this.biases[0];
@@ -139,8 +168,6 @@ export class Ship {
         let final = doc.tanh(finalB);
 
         let decision = doc.argmax(final);
-
-        console.log(decision, this.id);
         return decision;
     }
 }

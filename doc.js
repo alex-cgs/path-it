@@ -137,7 +137,6 @@ export function meanW(Mat1, Mat2) {
       }
     }
   }
-  console.log(newMat, "hererer");
   return newMat;
 }
 
