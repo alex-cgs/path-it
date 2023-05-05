@@ -4,7 +4,7 @@ body {
     flex-direction: column;
     background-color: #282828;
     color: white;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
     align-content: center;
     align-items: center;
     margin: auto;
@@ -29,5 +29,11 @@ canvas {
     canvas {
         width: 468px;
         height: 468px;
+    }
+    .ex {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: space-around;
     }
 }

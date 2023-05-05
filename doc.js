@@ -1,5 +1,11 @@
 import * as play from './ship.js';
 
+/**
+ * scalMult function
+ * @param Mat the matrix to multiply
+ * @param Scalar the scalar to multiply the matrix with
+ * @returns the result of the multiplication
+ */
 export function scalMult(Mat, Scalar) {
     for (var i = 0; i < Mat.length; i++) {
         Mat[i] = Mat[i].map(function(x) { return x * Scalar; });
@@ -7,6 +13,11 @@ export function scalMult(Mat, Scalar) {
     return Mat;
 }
 
+/**
+ * softmax function
+ * @param Mat 
+ * @returns Mat affected by softmax
+ */
 export function softmax(Mat) {
     const result = new Array();
     const row = Mat;
@@ -17,6 +28,11 @@ export function softmax(Mat) {
     return result;
 }
 
+/**
+ * softmaxDerivative function
+ * @param Mat 
+ * @returns the matrix affected by the derivative of softmax
+ */
 export function softmaxDerivative(Mat) {
     const result = new Array();
     for (let i = 0; i < Mat.length; i++) {
@@ -34,7 +50,11 @@ export function softmaxDerivative(Mat) {
     return result;
 }
 
-
+/**
+ * tanh function
+ * @param x the matrix to apply tanh to 
+ * @returns the matrix x with tanh applied
+ */
 export function tanh(x) {
   let newmat = [];
   for (let i = 0; i < x.length; i++) {
@@ -43,10 +63,21 @@ export function tanh(x) {
   return newmat;
 }
 
+/**
+ * tanhDer function
+ * @param x the matrix to apply the derivative of tanh to 
+ * @returns the matrix x with the derivative of tanh applied
+ */
 export function tanhDer(x) {
     return 1 - tanh(x)**2;
 }
 
+/**
+ * matMult function
+ * @param Mat1 the first, left matrix
+ * @param Mat2 the second, right matrix
+ * @returns Mat1 x Mat2
+ */
 export function matMult(Mat1, Mat2) {
   //console.log(Mat1, Mat2);
     // Check if the matrices can be multiplied
@@ -72,6 +103,12 @@ export function matMult(Mat1, Mat2) {
     return result;
 }
 
+/**
+ * matAdd function
+ * @param Mat1 the first matrix 
+ * @param Mat2 the second matrix
+ * @returns Mat1 + Mat2 
+ */
 export function matAdd(Mat1, Mat2) {
   let newMat = new Array(Mat1[0].length);
   for (let i = 0; i < Mat1[0].length; i++) {
@@ -92,7 +129,13 @@ export function argmax(Mat) {
   return idx;
 }
 
-/** Does the mean for weights (3D -> 2D arrays) */
+/**
+ * meanW function
+ * @param Mat1 the first matrix
+ * @param Mat2 the second matrix
+ * @returns (Mat1 + Mat2) / 2
+ * TO IMPROVE, NEWMAT!
+ */
 export function meanW(Mat1, Mat2) {
 
   var newMat = [
@@ -140,7 +183,13 @@ export function meanW(Mat1, Mat2) {
   return newMat;
 }
 
-/** Does the mean for weights (2D -> 1D arrays) */
+/**
+ * meanB function
+ * @param Mat1 the first matrix
+ * @param Mat2 the second matrix
+ * @returns (Mat1 + Mat2) / 2
+ * TO IMPROVE, NEWMAT!
+ */
 export function meanB(Mat1, Mat2) {
 
   var newMat = [
@@ -156,15 +205,15 @@ export function meanB(Mat1, Mat2) {
   return newMat;
 }
 
+/**
+ * getRandomInt function
+ * @param max the maximum value to be returned 
+ * @returns a float between 0 and max
+ */
 export function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
-
-
-//console.log(matMult([[2], [1], [3], [4]], [[5, 3, 4, 1]]));
-//console.log(matAdd([1, 2, 3, 4], [1, 2, 3, 4]))
-//console.log(mean([[2], [1], [3], [4]], [[10], [4], [1], [29]]));
-
+/*
 let x = meanW(
   [
     //Weights 9x6 between 1st and 2nd layer
@@ -192,7 +241,7 @@ let x = meanW(
   ]
 ]
 );
-
+/*
 let p1 = new play.Ship();
 let p2 = new play.Ship();
 
@@ -202,4 +251,4 @@ p2.initiate();
 console.log(p1, p2, meanW(p1.weights, p2.weights), "test meanW");
 
 
-console.log(meanB([[1, 2], [3, 4]], [[122, 123], [124, 125]]), "test meanB");
+console.log(meanB([[1, 2], [3, 4]], [[122, 123], [124, 125]]), "test meanB");*/
