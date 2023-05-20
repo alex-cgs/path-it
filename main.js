@@ -310,7 +310,7 @@ fetch('./maps/mapsDB.json')
 		genArray = data['Maps'];
 
         /** roundabout-1 */
-        let mapIdx = 2;
+        let mapIdx = 4;
 
 		let obj = genArray[mapIdx]['arr'];
 		map = Object.values(obj);

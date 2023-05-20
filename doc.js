@@ -205,6 +205,81 @@ export function meanB(Mat1, Mat2) {
   return newMat;
 }
 
+function aStar(map, start) {
+  const numRows = map.length;
+  const numCols = map[0].length;
+  const queue = [];
+  const visited = new Set();
+  const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; // Up, Down, Left, Right
+
+  // Find the starting position (1) in the map
+  let startRow, startCol;
+  for (let i = 0; i < numRows; i++) {
+    for (let j = 0; j < numCols; j++) {
+      if (map[i][j] === start) {
+        startRow = i;
+        startCol = j;
+        break;
+      }
+    }
+  }
+
+  // Initialize the queue with the starting position
+  queue.push({ row: startRow, col: startCol, steps: 0 });
+
+  while (queue.length > 0) {
+    const { row, col, steps } = queue.shift();
+
+    // Check if the current position is the target (3)
+    if (map[row][col] === 3) {
+      return steps;
+    }
+
+    // Explore the neighboring cells
+    for (const [dx, dy] of directions) {
+      const newRow = row + dx;
+      const newCol = col + dy;
+
+      // Check if the new position is within the map boundaries
+      if (
+        newRow >= 0 &&
+        newRow < numRows &&
+        newCol >= 0 &&
+        newCol < numCols
+      ) {
+        // Check if the new position is not an obstacle (2 or 4) and has not been visited before
+        if (
+          (map[newRow][newCol] === 0 || map[newRow][newCol] === 3) &&
+          !visited.has(`${newRow},${newCol}`)
+        ) {
+          queue.push({ row: newRow, col: newCol, steps: steps + 1 });
+          visited.add(`${newRow},${newCol}`);
+        }
+      }
+    }
+  }
+
+  // No path found
+  return -1;
+}
+
+const map = [
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+  [0, 2, 0, 2, 0, 2, 2, 2, 2, 0], 
+  [0, 2, 0, 2, 2, 2, 0, 0, 0, 0], 
+  [0, 2, 0, 0, 0, 2, 0, 2, 2, 0], 
+  [0, 2, 2, 2, 0, 2, 0, 0, 2, 0], 
+  [0, 2, 3, 2, 0, 2, 2, 2, 2, 0], 
+  [0, 2, 0, 2, 0, 0, 0, 0, 2, 0], 
+  [0, 2, 0, 2, 0, 2, 0, 0, 2, 0], 
+  [0, 2, 0, 2, 0, 2, 2, 2, 2, 0], 
+  [1, 2, 0, 0, 0, 0, 0, 0, 2, 0]];
+
+const shortestPath = aStar(map, 1);
+console.log(`Shortest path length: ${shortestPath}`);
+
+
+
 /**
  * getRandomInt function
  * @param max the maximum value to be returned 
@@ -241,6 +316,8 @@ let x = meanW(
   ]
 ]
 );
+
+
 /*
 let p1 = new play.Ship();
 let p2 = new play.Ship();
