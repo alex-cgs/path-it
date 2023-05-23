@@ -1,12 +1,5 @@
 import * as doc from './doc.js';
-import * as nn from './net.js';
 import * as play from './ship.js';
-
-//import { sqrt } from './mathjs';
-
-//import * as ops from './ops.js';
-
-//console.log(Math.sqrt(-4).toString()) // 2i
 
 var c = document.getElementById("Canv");
 
@@ -16,19 +9,16 @@ let genArray;
 let map;
 var xObs = [];
 var yObs = [];
-let xStart;
-let yStart;
-let genAngle;
 let xEnd;
 let yEnd;
 let ships;
 let efficiency;
-let effArr;
-let bestIdx;
+let gennum = 0;
+let effarr;
+let effrec = [];
 let selectedFit;
-let leaderboard;
+let mut;
 let numbDead = 2;
-
 var genFit = 1;
 
 function draw(map, idx, fill, stroke) {
@@ -103,19 +93,38 @@ function initNN(ships) {
 }
 
 
-let player1 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p1");
-let player2 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p2");
-let player3 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p3");
-let player4 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p4");
-let player5 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p5");
-/**
-let player6 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p6");
-let player7 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p7");
-let player8 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p8");
-let player9 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p9");
-let player10 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p10"); */
-ships = [player1];
+// let player1 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p1");
+// let player2 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p2");
+// let player3 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p3");
+// let player4 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p4");
+// let player5 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p5");
 
+ships = [];
+
+function updateGeneration() {
+    const genElement = document.getElementById('gen');
+    const generation = gennum;
+    genElement.textContent = 'Gen: ' + generation;
+}
+
+function updateEfficiency() {
+    const effElement = document.getElementById('eff');
+    const eff = efficiency;
+    effElement.textContent = 'Efficiency: ' + eff;
+}
+
+function updateMutationRate() {
+    const mutElement = document.getElementById('mut');
+    const mutationRate = mut;
+    mutElement.textContent = 'Mutation Rate: ' + mutationRate;
+}
+
+
+function updateValues() {
+    updateGeneration();
+    updateEfficiency();
+    updateMutationRate();
+}
 
 function update(xStart, yStart, genAngle) {
 
@@ -136,37 +145,63 @@ function update(xStart, yStart, genAngle) {
 
             if (decision == 1) {
                 ships[i].left()
-            } 
+            }
 
             if (decision == 2) {
                 ships[i].right()
-            } 
+            }
 
             //Check if ship is dead
             for (let d = 0; d < xObs.length; d++) {
 
                 //10 = ship's width, 58 = ship's width + object width (48)
                 if ((ships[i].x * 2 > xObs[d] - 5 && ships[i].x * 2 < xObs[d] + 53 &&
-                        ships[i].y * 2 > yObs[d] - 5 && ships[i].y * 2 < yObs[d] + 53) ||
+                    ships[i].y * 2 > yObs[d] - 5 && ships[i].y * 2 < yObs[d] + 53) ||
                     (ships[i].x * 2 > 475 || ships[i].y * 2 > 475 || ships[i].x * 2 < 5 || ships[i].y * 2 < 5)) {
 
                     ships[i].dead = true;
 
+                    var newX = (ships[i].x - (ships[i].x % 24)) / 24;
+
+                    var newY = (ships[i].y - (ships[i].y % 24)) / 24;
+
+                    let newmap = [new Array(10), new Array(10), new Array(10), new Array(10), new Array(10),
+                    new Array(10), new Array(10), new Array(10), new Array(10), new Array(10)];
+
+                    for (let g = 0; g < map.length; g++) {
+                        for (let h = 0; h < map.length; h++) {
+                            newmap[g][h] = map[g][h];
+                            if (g == newY && h == newX) {
+                                newmap[g][h] = 4
+                            }
+                        }
+                    }
+
+                    newmap[newY][newX] = 4;
+
                     numbDead += 1;
 
-                    ships[i].fit = 10000 * 460800 * genFit / ((Math.abs(ships[i].x - xEnd)**2 + Math.abs(ships[i].y - yEnd)**2))**2;
+                    ships[i].fit = 1 - (doc.aStar(newmap, 4) / doc.aStar(map, 1))
+
+                    if (ships[i] < -0.09) {
+                        ships[i].initiate();
+                    }
+
+                    console.log(ships[i].id, ships[i].fit);
+
+                    newmap = [];
 
                     break;
                 }
 
                 if ((ships[i].x * 2 > xEnd - 5 && ships[i].x * 2 < xEnd + 53 &&
-                        ships[i].y * 2 > yEnd - 5 && ships[i].y * 2 < yEnd + 53)) {
+                    ships[i].y * 2 > yEnd - 5 && ships[i].y * 2 < yEnd + 53)) {
 
                     ships[i].dead = true;
 
                     numbDead += 1;
 
-                    ships[i].fit = (1 / genFit) * 10000000000;
+                    ships[i].fit = 1;
                     break;
                 }
             }
@@ -174,72 +209,90 @@ function update(xStart, yStart, genAngle) {
         ships[i].draw(ctx);
         ships[i].move(ctx);
     }
-    //console.log(player1.x, player1.y);
+    // console.log(ships[0].x, ships[0].y);
     genFit += 0.002;
-    if (genFit > 2.5 || numbDead == ships.length) {
+    if (genFit > 3.5 || numbDead == ships.length) {
+        gennum += 1;
         numbDead = 0;
         genFit = 1;
-        for (let i = 0; i < ships.length; i ++) {
+        for (let i = 0; i < ships.length; i++) {
             if (!ships[i].dead) {
-                ships[i].fit = 0
+                var newX = (ships[i].x - (ships[i].x % 24)) / 24;
+
+                var newY = (ships[i].y - (ships[i].y % 24)) / 24;
+
+                let newmap = [new Array(10), new Array(10), new Array(10), new Array(10), new Array(10),
+                new Array(10), new Array(10), new Array(10), new Array(10), new Array(10)];
+
+                for (let g = 0; g < map.length; g++) {
+                    for (let h = 0; h < map.length; h++) {
+                        newmap[g][h] = map[g][h];
+                        if (g == newY && h == newX) {
+                            newmap[g][h] = 4
+                        }
+                    }
+                }
+
+                newmap[newY][newX] = 4;
+
+                ships[i].fit = 1 - (doc.aStar(newmap, 4) / doc.aStar(map, 1))
+
+                if (ships[i] < -0.09) {
+                    ships[i].initiate();
+                }
+
+                console.log(ships[i].id, ships[i].fit);
+
+                newmap = [];
             }
         }
+        effarr = [];
+
+        for (let i = 0; i < ships.length; i++) {
+            effarr.push(ships[i].fit);
+        }
+
         var bestIdx = select(ships, xEnd, yEnd);
-        
+
         console.log(ships, "next");
-
-        leaderboard = [ships[bestIdx]];
-
-        for (let i = 0; i < ships.length; i ++) {
-            if (i != bestIdx) {
-                leaderboard.push(ships[i]);
-            }
-        }
-
-        
-
-        effArr = [];
-
-        for (let i = 0; i < leaderboard.length; i ++) {
-            if (leaderboard[i].fit > 1000000) {
-                effArr.push(12 - 0.5*effArr.length);
-            }
-            else {
-                effArr = [].concat(effArr, (Math.tanh(leaderboard[i].fit / 1400) * 10));
-            }
-        }
 
         ships = crossover(ships[bestIdx], ships, xStart, yStart, genAngle, xObs, yObs);
 
-        let mut = mutation(ships.slice(1));
+        mut = mutation(ships.slice(1));
 
         efficiency = 0;
+
+        let flag = false;
 
         for (let i = 0; i < ships.length; i++) {
             ships[i].draw(ctx);
             ships[i].move;
-            if (i == 0) {
-                efficiency += (1 - mut) * Math.tanh(effArr[i]);
+            if (effarr[i] == selectedFit && flag == false) {
+                efficiency += selectedFit * (3 / 4);
+                flag = true;
             }
             else {
-                efficiency += (mut / 4) * Math.tanh(effArr[i]);
+                efficiency += effarr[i] / (4 * (ships.length - 1));
             }
         }
 
-        console.log("mutation rate: ", mut, mut, mut);
-
-        console.log("efficiency: ", efficiency);
+        effrec.push(efficiency);
         
-        console.log("efficiency array: ", effArr);
+        if (gennum == 50) {
+            downloadFile();
+        }
+
+        updateValues();
+
+        console.log("mutation rate: ", mut);
+
+        console.log("efficiency: ", efficiency, effrec);
     }
     //console.log(1/genFit);
 }
 
 //select function, selects the individual with highest fit score or lowest distance to endpoint
-function select(ships, xEnd, yEnd) {
-    for (let i = 0; i < ships.length; i++) {
-        ships[i].dead = true;
-    }
+function select(ships) {
     var bestFit = -1;
     var bestFitIdx = -1;
     for (let i = 0; i < ships.length; i++) {
@@ -249,14 +302,12 @@ function select(ships, xEnd, yEnd) {
         }
     }
     console.log(ships[bestFitIdx].id + " has been selected");
-    selectedFit = [ships[bestFitIdx].fit]
-    ships[bestFitIdx].best = true;
-    ships[bestFitIdx].id = "currentBest"
-    bestIdx = bestFitIdx;
+    selectedFit = [ships[bestFitIdx].fit];
+    ships[bestFitIdx].id = "currentBest";
     return bestFitIdx;
 }
 
-function crossover(best, ships, xSpawn, ySpawn, angle, xObs, yObs, id) {
+function crossover(best, ships, xSpawn, ySpawn, angle, xObs, yObs) {
     let newShips = [];
     for (let i = 0; i < ships.length; i++) {
         if (best != ships[i]) {
@@ -272,13 +323,16 @@ function crossover(best, ships, xSpawn, ySpawn, angle, xObs, yObs, id) {
 }
 
 function mutation(ships) {
-    const mutationRate = (1 - Math.tanh(selectedFit / 300)) / 2 + 0.07; // define mut rate as a constant
+    let mutationRate = (1 - selectedFit) / 2.5;
+    if (mutationRate < 0.03) {
+        mutationRate += 0.02;
+    }
     for (let i = 0; i < ships.length; i++) {
         for (let j = 0; j < ships[i].weights.length; j++) {
             for (let k = 0; k < ships[i].weights[j].length; k++) {
                 for (let l = 0; l < ships[i].weights[j][k].length; l++) {
-                    if (Math.random() <= mutationRate && !ships[i].best) { // check if a mut should occur
-                        ships[i].weights[j][k][l] = (-1)**doc.getRandomInt(2) * Math.random(); // apply the mutation
+                    if (Math.random() <= mutationRate && !ships[i].best) { 
+                        ships[i].weights[j][k][l] = (-1) ** doc.getRandomInt(2) * Math.random();
                     }
                 }
             }
@@ -286,7 +340,7 @@ function mutation(ships) {
         for (let j = 0; j < ships[i].biases.length; j++) {
             for (let k = 0; k < ships[i].biases[j].length; k++) {
                 if (Math.random() <= mutationRate) {
-                    ships[i].biases[j][k] = (-1)**doc.getRandomInt(2) * Math.random();
+                    ships[i].biases[j][k] = (-1) ** doc.getRandomInt(2) * Math.random();
                 }
             }
         }
@@ -294,67 +348,112 @@ function mutation(ships) {
     return mutationRate
 }
 
+window.mapIdx = 4;
 
+addEventListener("DOMContentLoaded", (event) => {
+    var a = document.getElementById("0");
+    var b = document.getElementById("1");
+    var e = document.getElementById("2");
+    var d = document.getElementById("3");
+    var dwn = document.getElementById("dwn");
 
-//main function, for the whole game scenario, everything before is setting up
-function nextGen() {
-    return 0;
+    a.addEventListener("click", changeMapIndex);
+    b.addEventListener("click", changeMapIndex);
+    e.addEventListener("click", changeMapIndex);
+    d.addEventListener("click", changeMapIndex);
+    dwn.addEventListener("click", downloadFile);
+});
+
+function changeMapIndex() {
+    console.log("pressed");
+    window.mapIdx = parseInt(this.id);
+    console.log(mapIdx);
 }
 
+function downloadFile() {
+    var obj = {"ships": ships, "eff": effrec};
+    var filename = "download.json";
+    var blob = new Blob([JSON.stringify(obj)], {type: 'text/plain'});
+    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveOrOpenBlob(blob, filename);
+    } else{
+        var e = document.createEvent('MouseEvents'),
+        a = document.createElement('a');
+        a.download = filename;
+        a.href = window.URL.createObjectURL(blob);
+        a.dataset.downloadurl = ['text/plain', a.download, a.href].join(':');
+        e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        a.dispatchEvent(e);
+    }
+}
 
-fetch('./maps/mapsDB.json')
-	.then(response => response.json())
-	.then(data => {
+fetch('../maps/mapsDB.json')
+    .then(response => response.json())
+    .then(data => {
+
+        /**
+         * Do this into a big function call and canvas.rect
+         */
 
         // Do something with the JSON data
-		genArray = data['Maps'];
+        genArray = data['Maps'];
 
         /** roundabout-1 */
-        let mapIdx = 4;
+        
 
-		let obj = genArray[mapIdx]['arr'];
-		map = Object.values(obj);
+        
+        
+
+        let obj = genArray[mapIdx]['arr'];
+        map = Object.values(obj);
 
         let xStart = genArray[mapIdx]['xStart'];
         let yStart = genArray[mapIdx]['yStart'];
         let genAngle = genArray[mapIdx]['angle'];
 
-		setup();
-        
+        setup();
+
         let p1 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p1");
         let p2 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p2");
         let p3 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p3");
         let p4 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p4");
         let p5 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
+        let p6 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
+        let p7 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
+        let p8 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
+        let p9 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
+        let p10 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
         /**
         let player6 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p6");
         let player7 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p7");
         let player8 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p8");
         let player9 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p9");
         let player10 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p10"); */
-        ships = [p1, p2, p3, p4, p5];
+        ships = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10];
 
 
-		initNN(ships);
+        initNN(ships);
         //console.log(player1);
-		update(xStart, yStart, genAngle); //Needs 1 update to spawn ships and obstacles to the map. 
+        update(xStart, yStart, genAngle); //Needs 1 update to spawn ships and obstacles to the map. 
         //let best = select(ships);
         //let newShips = crossover(best, ships, 0, 0, 0, [], []);
         //mutation(newShips);
         //console.log(newShips);
-        
-        document.addEventListener('keydown', function(e) {
+
+        document.addEventListener('keydown', function (e) {
             switch (e.keyCode) {
                 case 13:
+                    gennum += 1;
                     genFit = 1;
-                    for (let i = 0; i < ships.length; i ++) {
+                    numbDead = 0;
+                    for (let i = 0; i < ships.length; i++) {
                         if (!ships[i].dead) {
                             ships[i].fit = 0
                         }
                     }
                     var bestIdx = select(ships, xEnd, yEnd);
                     ships = crossover(ships[bestIdx], ships, xStart, yStart, genAngle, xObs, yObs);
- 
+
                     let mut = mutation(ships.slice(1));
             }
             for (let i = 0; i < ships.length; i++) {
@@ -362,7 +461,7 @@ fetch('./maps/mapsDB.json')
                     case 37:
                         mapIdx -= 1;
                         obj = genArray[mapIdx]['arr'];
-		                map = Object.values(obj);
+                        map = Object.values(obj);
                         break;
                     case 38:
                         ships[i].move();
@@ -383,5 +482,5 @@ fetch('./maps/mapsDB.json')
             }
         });
 
-	})
-	.catch(error => console.error(error));
+    })
+    .catch(error => console.error(error));
