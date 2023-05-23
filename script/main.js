@@ -387,7 +387,7 @@ function downloadFile() {
     }
 }
 
-fetch('../maps/mapsDB.json')
+fetch('script/maps/mapsDB.json')
     .then(response => response.json())
     .then(data => {
 
