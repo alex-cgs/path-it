@@ -346,8 +346,6 @@ function mutation(ships) {
     return mutationRate
 }
 
-window.mapIdx = 4;
-
 addEventListener("DOMContentLoaded", (event) => {
     var a = document.getElementById("0");
     var b = document.getElementById("1");
