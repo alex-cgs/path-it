@@ -5,6 +5,10 @@ var c = document.getElementById("Canv");
 
 let ctx = c.getContext("2d");
 
+ctx.font = "bold 30px Arial";
+ctx.fillStyle = "white";
+ctx.fillText("Select a Map", 150, 240);
+
 let genArray;
 let map;
 var xObs = [];
@@ -92,12 +96,6 @@ function initNN(ships) {
     }
 }
 
-
-// let player1 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p1");
-// let player2 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p2");
-// let player3 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p3");
-// let player4 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p4");
-// let player5 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p5");
 
 ships = [];
 
@@ -277,7 +275,7 @@ function update(xStart, yStart, genAngle) {
         }
 
         effrec.push(efficiency);
-        
+
         if (gennum == 50) {
             downloadFile();
         }
@@ -331,7 +329,7 @@ function mutation(ships) {
         for (let j = 0; j < ships[i].weights.length; j++) {
             for (let k = 0; k < ships[i].weights[j].length; k++) {
                 for (let l = 0; l < ships[i].weights[j][k].length; l++) {
-                    if (Math.random() <= mutationRate && !ships[i].best) { 
+                    if (Math.random() <= mutationRate && !ships[i].best) {
                         ships[i].weights[j][k][l] = (-1) ** doc.getRandomInt(2) * Math.random();
                     }
                 }
@@ -355,30 +353,42 @@ addEventListener("DOMContentLoaded", (event) => {
     var b = document.getElementById("1");
     var e = document.getElementById("2");
     var d = document.getElementById("3");
+    var f = document.getElementById("4");
     var dwn = document.getElementById("dwn");
+
+    var mapbtn = document.getElementById("mapbtn");
 
     a.addEventListener("click", changeMapIndex);
     b.addEventListener("click", changeMapIndex);
     e.addEventListener("click", changeMapIndex);
     d.addEventListener("click", changeMapIndex);
+    f.addEventListener("click", changeMapIndex);
     dwn.addEventListener("click", downloadFile);
+
+    mapbtn.addEventListener("click", loadMap);
 });
 
 function changeMapIndex() {
     console.log("pressed");
     window.mapIdx = parseInt(this.id);
     console.log(mapIdx);
+    main(mapIdx, undefined);
+}
+
+function loadMap() {
+    let mapval = document.getElementById("mapcontent").value;
+    main(0, mapval);
 }
 
 function downloadFile() {
-    var obj = {"ships": ships, "eff": effrec};
+    var obj = { "ships": ships, "eff": effrec };
     var filename = "download.json";
-    var blob = new Blob([JSON.stringify(obj)], {type: 'text/plain'});
+    var blob = new Blob([JSON.stringify(obj)], { type: 'text/plain' });
     if (window.navigator && window.navigator.msSaveOrOpenBlob) {
         window.navigator.msSaveOrOpenBlob(blob, filename);
-    } else{
+    } else {
         var e = document.createEvent('MouseEvents'),
-        a = document.createElement('a');
+            a = document.createElement('a');
         a.download = filename;
         a.href = window.URL.createObjectURL(blob);
         a.dataset.downloadurl = ['text/plain', a.download, a.href].join(':');
@@ -387,100 +397,101 @@ function downloadFile() {
     }
 }
 
-fetch('script/maps/mapsDB.json')
-    .then(response => response.json())
-    .then(data => {
+function main(mapIdx, maplay) {
+    fetch('script/maps/mapsDB.json')
+        .then(response => response.json())
+        .then(data => {
 
-        /**
-         * Do this into a big function call and canvas.rect
-         */
+            /**
+             * Do this into a big function call and canvas.rect
+             */
 
-        // Do something with the JSON data
-        genArray = data['Maps'];
+            // Do something with the JSON data
+            genArray = data['Maps'];
 
-        /** roundabout-1 */
-        
+            /** roundabout-1 */
 
-        
-        
+            let obj = genArray[mapIdx]['arr'];
 
-        let obj = genArray[mapIdx]['arr'];
-        map = Object.values(obj);
-
-        let xStart = genArray[mapIdx]['xStart'];
-        let yStart = genArray[mapIdx]['yStart'];
-        let genAngle = genArray[mapIdx]['angle'];
-
-        setup();
-
-        let p1 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p1");
-        let p2 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p2");
-        let p3 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p3");
-        let p4 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p4");
-        let p5 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
-        let p6 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
-        let p7 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
-        let p8 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
-        let p9 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
-        let p10 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
-        /**
-        let player6 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p6");
-        let player7 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p7");
-        let player8 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p8");
-        let player9 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p9");
-        let player10 = new play.Ship(12, 12, Math.PI / 4, [0], [0], xObs, yObs, "p10"); */
-        ships = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10];
-
-
-        initNN(ships);
-        //console.log(player1);
-        update(xStart, yStart, genAngle); //Needs 1 update to spawn ships and obstacles to the map. 
-        //let best = select(ships);
-        //let newShips = crossover(best, ships, 0, 0, 0, [], []);
-        //mutation(newShips);
-        //console.log(newShips);
-
-        document.addEventListener('keydown', function (e) {
-            switch (e.keyCode) {
-                case 13:
-                    gennum += 1;
-                    genFit = 1;
-                    numbDead = 0;
-                    for (let i = 0; i < ships.length; i++) {
-                        if (!ships[i].dead) {
-                            ships[i].fit = 0
-                        }
-                    }
-                    var bestIdx = select(ships, xEnd, yEnd);
-                    ships = crossover(ships[bestIdx], ships, xStart, yStart, genAngle, xObs, yObs);
-
-                    let mut = mutation(ships.slice(1));
+            if (maplay == undefined) {
+                map = Object.values(obj);
             }
-            for (let i = 0; i < ships.length; i++) {
+            else {
+                map = JSON.parse(maplay);
+            }
+
+            console.log(map);
+
+            let xStart = genArray[mapIdx]['xStart'];
+            let yStart = genArray[mapIdx]['yStart'];
+            let genAngle = genArray[mapIdx]['angle'];
+
+            console.log(doc.aStar(map, 1));
+
+            setup();
+
+            let p1 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p1");
+            let p2 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p2");
+            let p3 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p3");
+            let p4 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p4");
+            let p5 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
+            let p6 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
+            let p7 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
+            let p8 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
+            let p9 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
+            let p10 = new play.Ship(genArray[mapIdx]['xStart'], genArray[mapIdx]['yStart'], genArray[mapIdx]['angle'], [0], [0], xObs, yObs, "p5");
+
+            ships = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10];
+
+
+            initNN(ships);
+            update(xStart, yStart, genAngle); //Needs 1 update to spawn ships and obstacles to the map. 
+
+            document.addEventListener('keydown', function (e) {
                 switch (e.keyCode) {
-                    case 37:
-                        mapIdx -= 1;
-                        obj = genArray[mapIdx]['arr'];
-                        map = Object.values(obj);
-                        break;
-                    case 38:
-                        ships[i].move();
-                        ships[i].dead = false;
-                        const myInterval = setInterval(update, 50, xStart, yStart, genAngle);
-                        break;
-                    case 39:
-                        mapIdx += 1;
-                        break;
-                    case 40:
-                        ships[i].dead = true;
-                        update(xStart, yStart, genAngle);
-                        clearInterval(myInterval);
-                        break;
                     case 13:
-                        ships[i].move()
-                }
-            }
-        });
+                        gennum += 1;
+                        genFit = 1;
+                        numbDead = 0;
+                        for (let i = 0; i < ships.length; i++) {
+                            if (!ships[i].dead) {
+                                ships[i].fit = 0
+                            }
+                        }
+                        var bestIdx = select(ships, xEnd, yEnd);
+                        ships = crossover(ships[bestIdx], ships, xStart, yStart, genAngle, xObs, yObs);
 
-    })
-    .catch(error => console.error(error));
+                        let mut = mutation(ships.slice(1));
+                }
+                for (let i = 0; i < ships.length; i++) {
+                    switch (e.keyCode) {
+                        case 37:
+                            mapIdx -= 1;
+                            obj = genArray[mapIdx]['arr'];
+                            map = Object.values(obj);
+                            break;
+                        case 38:
+                            ships[i].move();
+                            ships[i].dead = false;
+                            const myInterval = setInterval(update, 50, xStart, yStart, genAngle);
+                            break;
+                        case 39:
+                            mapIdx += 1;
+                            break;
+                        case 40:
+                            ships[i].dead = true;
+                            update(xStart, yStart, genAngle);
+                            clearInterval(myInterval);
+                            break;
+                        case 13:
+                            ships[i].move()
+                    }
+                }
+            });
+
+        })
+        .catch(error => console.error(error));
+
+        let par = document.getElementById('cap');
+        par.innerHTML = "Press UP key to begin"
+}

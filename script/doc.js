@@ -142,40 +142,9 @@ export function meanW(Mat1, Mat2) {
    * Assert mat1 size and mat2 too
    */
 
-  var newMat = [
-    [[
-      [], [], [], [], [], []
-    ], [
-      [], [], [], [], [], []
-    ], [
-      [], [], [], [], [], []
-    ], [
-      [], [], [], [], [], []
-    ], [
-      [], [], [], [], [], []
-    ], [
-      [], [], [], [], [], []
-    ], [
-      [], [], [], [], [], []
-    ], [
-      [], [], [], [], [], []
-    ], [
-      [], [], [], [], [], []
-    ]],
-    [[
-      [], [], []
-    ], [
-      [], [], []
-    ], [
-      [], [], []
-    ], [
-      [], [], []
-    ], [
-      [], [], []
-    ], [
-      [], [], []
-    ]],
-  ];
+  var newMat = structuredClone(Mat1);
+
+  console.log(Mat1, Mat2, newMat, "Test");
 
   for (let i = 0; i < Mat1.length; i++) {
     for (let j = 0; j < Mat1[i].length; j++) {
@@ -196,10 +165,7 @@ export function meanW(Mat1, Mat2) {
  */
 export function meanB(Mat1, Mat2) {
 
-  var newMat = [
-    [],
-    [],
-  ];
+  var newMat = structuredClone(Mat1);
 
   for (let i = 0; i < Mat1.length; i++) {
     for (let j = 0; j < Mat1[i].length; j++) {
@@ -265,24 +231,7 @@ export function aStar(map, start) {
 
   // No path found
   return -1;
-}
-
-const map = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 2, 0, 2, 0, 2, 2, 2, 2, 0],
-  [0, 2, 0, 2, 2, 2, 0, 0, 0, 0],
-  [0, 2, 0, 0, 0, 2, 0, 2, 2, 0],
-  [0, 2, 2, 2, 0, 2, 0, 0, 2, 0],
-  [0, 2, 3, 2, 0, 2, 2, 2, 2, 0],
-  [0, 2, 0, 2, 0, 0, 0, 0, 2, 0],
-  [0, 2, 0, 2, 0, 2, 0, 0, 2, 0],
-  [0, 2, 0, 2, 0, 2, 2, 2, 2, 0],
-  [1, 2, 0, 0, 0, 0, 0, 0, 2, 0]];
-
-const shortestPath = aStar(map, 1);
-console.log(`Shortest path length: ${shortestPath}`);
-
-
+} 
 
 /**
  * getRandomInt function

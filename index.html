@@ -16,7 +16,7 @@
 
 <body>
     <h1>Path-IT</h1>
-    <p>An app for pathfinding with defined constraints</p>
+    <p id="cap">An app for pathfinding with defined constraints</p>
     <div id="par">
         <div class="ex">
             <h2 id="gen" class="neutral">Gen: </h2>
@@ -41,9 +41,10 @@
                 <button class="dropbtn">Choose Map</button>
                 <div class="dropdown-content">
                     <a href="#" id="0">debug_1</a>
-                    <a href="#" id="1">roundabout_1</a>
-                    <a href="#" id="2">zigzag_1</a>
-                    <a href="#" id="3">hard_1</a>
+                    <a href="#" id="1">debug_2</a>
+                    <a href="#" id="2">roundabout_1</a>
+                    <a href="#" id="3">zigzag_1</a>
+                    <a href="#" id="4">hard_1</a>
                 </div>
             </div>
 
@@ -59,10 +60,7 @@
             <hr>
             <hr>
 
-            <form id="uploadbanner" enctype="multipart/form-data" class="neutral" method="post" action="#">
-                <input id="fileupload" name="myfile" type="file" />
-                <input type="submit" value="Upload Generation" id="submit" />
-            </form>
+            <input id="mapcontent" placeholder="Enter your map"> <hr> <button class="neutral" id="mapbtn">Send Map</button>
         </div>
     </div>
 </body>
