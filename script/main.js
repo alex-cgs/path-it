@@ -490,6 +490,6 @@ function main(mapIdx, maplay) {
         })
         .catch(error => console.error(error));
 
-        let par = document.getElementById('cap');
-        par.innerHTML = "Press UP key to begin"
+    let par = document.getElementById('cap');
+    par.innerHTML = "Press UP key to begin"
 }
