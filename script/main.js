@@ -289,7 +289,6 @@ function update(xStart, yStart, genAngle) {
     //console.log(1/genFit);
 }
 
-//select function, selects the individual with highest fit score or lowest distance to endpoint
 function select(ships) {
     var bestFit = -1;
     var bestFitIdx = -1;

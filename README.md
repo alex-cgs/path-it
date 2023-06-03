@@ -19,9 +19,9 @@ To load personalized maps in the "Enter your map" input field, follow those mand
 - Your map should be a 10x10 JavaScript input array.
 - This array should abide to those rulse:
 - - 0: Empty cell 
-- - 1: Starting Point (exactly one)
+- - 1: Starting Cell (exactly one)
 - - 2: Obstacles
-- - 3: Ending point (exactly one)
+- - 3: Ending Cell (exactly one)
 
 Here is an example template for debug_1 that you can copy, modify and paste into the field before pressing "Send Map" button:
 

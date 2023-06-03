@@ -134,14 +134,10 @@ export function argmax(Mat) {
  * @param Mat1 the first matrix
  * @param Mat2 the second matrix
  * @returns (Mat1 + Mat2) / 2
- * TO IMPROVE, NEWMAT!
  */
 export function meanW(Mat1, Mat2) {
 
-  /**
-   * Assert mat1 size and mat2 too
-   */
-
+  /** newMat is a deep clone of Mat1 */
   var newMat = structuredClone(Mat1);
 
   console.log(Mat1, Mat2, newMat, "Test");
@@ -161,10 +157,10 @@ export function meanW(Mat1, Mat2) {
  * @param Mat1 the first matrix
  * @param Mat2 the second matrix
  * @returns (Mat1 + Mat2) / 2
- * TO IMPROVE, NEWMAT!
  */
 export function meanB(Mat1, Mat2) {
 
+  /** newMat is a deep clone of Mat1 */
   var newMat = structuredClone(Mat1);
 
   for (let i = 0; i < Mat1.length; i++) {
@@ -175,6 +171,12 @@ export function meanB(Mat1, Mat2) {
   return newMat;
 }
 
+/**
+ * aStar function
+ * @param map the map on which to execute aStart 
+ * @param start is the index of the starting cell 
+ * @returns 
+ */
 export function aStar(map, start) {
   const numRows = map.length;
   const numCols = map[0].length;
@@ -241,44 +243,3 @@ export function aStar(map, start) {
 export function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
-/*
-let x = meanW(
-  [
-    //Weights 9x6 between 1st and 2nd layer
-    [
-        [2, 1, 3],
-        [6, 5, 4],
-    ],
-
-    //Weights 6x3 between 2nd and 3rd layer
-    [
-        [5, 6, 45],
-        [32, 1, 3],
-    ]
-], [
-  //Weights 9x6 between 1st and 2nd layer
-  [
-      [4, 2, 6],
-      [3213, 12, 321],
-  ],
-
-  //Weights 6x3 between 2nd and 3rd layer
-  [
-      [3121, 12, 999],
-      [32312, 1214, 9210],
-  ]
-]
-);
-
-
-/*
-let p1 = new play.Ship();
-let p2 = new play.Ship();
-
-p1.initiate();
-p2.initiate();
-
-console.log(p1, p2, meanW(p1.weights, p2.weights), "test meanW");
-
-
-console.log(meanB([[1, 2], [3, 4]], [[122, 123], [124, 125]]), "test meanB");*/
