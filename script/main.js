@@ -207,7 +207,6 @@ function update(xStart, yStart, genAngle) {
         ships[i].draw(ctx);
         ships[i].move(ctx);
     }
-    // console.log(ships[0].x, ships[0].y);
     genFit += 0.002;
     if (genFit > 3.5 || numbDead == ships.length) {
         gennum += 1;
@@ -250,7 +249,7 @@ function update(xStart, yStart, genAngle) {
             effarr.push(ships[i].fit);
         }
 
-        var bestIdx = select(ships, xEnd, yEnd);
+        var bestIdx = select(ships);
 
         console.log(ships, "next");
 
@@ -275,10 +274,6 @@ function update(xStart, yStart, genAngle) {
         }
 
         effrec.push(efficiency);
-
-        if (gennum == 50) {
-            downloadFile();
-        }
 
         updateValues();
 
@@ -455,7 +450,7 @@ function main(mapIdx, maplay) {
                                 ships[i].fit = 0
                             }
                         }
-                        var bestIdx = select(ships, xEnd, yEnd);
+                        var bestIdx = select(ships);
                         ships = crossover(ships[bestIdx], ships, xStart, yStart, genAngle, xObs, yObs);
 
                         let mut = mutation(ships.slice(1));
