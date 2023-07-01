@@ -4,7 +4,7 @@ Path-IT is the second Bachelor Semester Project initiated by Tinouert Alexandre 
 
 # 
 ## Links:
-[Path-IT](https://cooknchips.github.io/path-it/) <br>
+[Path-IT](https://alex-cgs.github.io/path-it/) <br>
 [GitHub Repo](https://github.com/CookNChips/path-it) 
 #
 
